@@ -92,7 +92,7 @@ export default function NavBar ({window, toggleTheme}) {
         alignItems="center"
       >
         <CssBaseline />
-        <AppBar component="nav" sx={{background: 'transparent'}}>
+        <AppBar component="nav" sx={{background: isDark ? '#212121' : '#E6E1E1'}}>
           <Toolbar sx={{display: 'flex', justifyContent: 'space-between', alignContent: 'center'}}>
 
             {/* Mobile View Start */}
@@ -102,6 +102,7 @@ export default function NavBar ({window, toggleTheme}) {
                 aria-label="open side menu"
                 edge="start"
                 onClick={handleDrawerToggle}
+                sx={{color: 'primary.main'}}
               >
                 <MenuIcon />
               </IconButton>
@@ -113,7 +114,7 @@ export default function NavBar ({window, toggleTheme}) {
             </Grid>
             <Grid item sx={{ display: { sm: 'none' } }}>
               <IconButton onClick={changeTheme}>
-                <Avatar alt="Theme" >
+                <Avatar alt="Theme" sx={{bgcolor: 'primary.main', color: 'primary.contrastText'}}>
                   {isDark
                     ? (
                       <DarkMode />

@@ -40,7 +40,7 @@ export default function Layout ({children, toggleTheme}) {
       <Head>
         <title>Expensio</title>
         <meta name="description" content="Your Personal Expense Tracker" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width" />
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <Navbar toggleTheme={toggleTheme} />
