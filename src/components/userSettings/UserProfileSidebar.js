@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input'
 import { Avatar, Box, Divider, Drawer, Grid, IconButton, TextField, Typography, Link, Tooltip } from '@mui/material'
-import { Close as CloseIcon, Cached as CachedIcon, Done as DoneIcon, Edit as EditIcon } from '@mui/icons-material'
+import { Close as CloseIcon, Cached as CachedIcon, Save as SaveIcon, Edit as EditIcon } from '@mui/icons-material'
 import styled from '@emotion/styled'
 import { updateUserProfile } from '@/store/auth'
 import { convertToBase64 } from '@/helpers/fileHelper'
@@ -171,7 +171,7 @@ export default function UserProfileSidebar ({openProfileSidebar, toggleProfileSi
                   </Tooltip>
                   <Tooltip title="Save">
                     <IconButton onClick={updateUser}>
-                      <DoneIcon color='success' />
+                      <SaveIcon color='success' />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Close">
@@ -202,18 +202,18 @@ export default function UserProfileSidebar ({openProfileSidebar, toggleProfileSi
           {/* Header End */}
           <Divider />
           {/* Body Start */}
-          <Box sx={{p:2, maxHeight: '80%', overflowY: 'auto'}}>
+          <Box sx={{p:2, maxHeight: '100%', overflowY: 'auto'}}>
 
             <>
               <Grid container justifyContent='center' alignItems="center" pt={2} pb={2} spacing={2}>
                 {isView && (
-                  <Avatar alt='image' variant="rounded" src={userData.image ? userData.image : '/images/user/guest.jpg'} sx={{width: 250, height: 250, mt:1}} />
+                  <Avatar alt='image' variant="rounded" src={userData.image ? userData.image : '/images/user/guest.jpg'} sx={{width: 200, height: 200, mb:1}} />
                 )}
                 {
                   (isEdit) && (
                     <>
                       <label htmlFor='hidden-input' style={{cursor: 'pointer'}}>
-                        <Avatar alt='image' variant="rounded" src={isView ? userData.image : (inputData.image ? inputData.image : '/images/user/guest.jpg') } sx={{width: 250, height: 250, mt:1, mr:5 }} />
+                        <Avatar alt='image' variant="rounded" src={isView ? userData.image : (inputData.image ? inputData.image : '/images/user/guest.jpg') } sx={{width: 200, height: 200, mb:1}} />
                       </label>
                       <VisuallyHiddenInput id='hidden-input' type="file" onChange={(event) => { handleInput(event.target.files[0], 'image') }} accept=".png, .jpg, .jpeg"/>
                     </>

@@ -1,6 +1,8 @@
+'use client'
 import { NextResponse } from 'next/server'
+
 export function middleware (request) {
-  if (request.cookies.has('accessToken') && request.cookie.has('authUser')) {
+  if (request.cookies.get('accessToken')) {
     return NextResponse.next()
   }
   return NextResponse.redirect(new URL('/', request.url))

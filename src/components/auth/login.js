@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-
+import Cookies from 'js-cookie'
 import { IconButton, InputAdornment, Button, TextField, Link, Grid, Box, Typography, Stack, Divider, SvgIcon } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 
@@ -42,6 +42,7 @@ export default function LoginTab () {
         const userObj = response?.data?.user
         localStorage.setItem('accessToken', JSON.stringify(response?.data?.access_token))
         localStorage.setItem('authUser', JSON.stringify(userObj))
+        Cookies.set('accessToken', JSON.stringify(response?.data?.access_token), { expires: 1 })
         dispatch({type: 'localstorage/get'})
         dispatch({type: 'authModal/close'})
         router.replace('/dashboard')

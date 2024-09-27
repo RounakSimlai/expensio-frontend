@@ -4,6 +4,7 @@ import { matchIsValidTel } from 'mui-tel-input'
 import { useRouter } from 'next/router'
 import zxcvbn from 'zxcvbn'
 import toast from 'react-hot-toast'
+import Cookies from 'js-cookie'
 import { Box, Typography } from '@mui/material'
 
 import { loginUser, registerUser } from '@/store/auth'
@@ -51,6 +52,7 @@ export default function RegisterTab () {
       if (response.status.success) {
         localStorage.setItem('accessToken', JSON.stringify(response?.data?.access_token))
         localStorage.setItem('authUser', JSON.stringify(response?.data?.user))
+        Cookies.set('accessToken', JSON.stringify(response?.data?.access_token), { expires: 1 })
         dispatch({type: 'localstorage/get'})
         router.reload()
       }

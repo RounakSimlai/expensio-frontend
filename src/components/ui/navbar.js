@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
+import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -67,6 +68,7 @@ export default function NavBar ({window, toggleTheme}) {
   const logOutUser = () => {
     localStorage.clear()
     dispatch({type: 'localstorage/get'})
+    Cookies.remove('accessToken')
     router.push('/')
   }
   const checkSignedIn = async () => {
