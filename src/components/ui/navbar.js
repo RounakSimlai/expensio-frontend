@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import toast from 'react-hot-toast'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppBar, Box, CssBaseline, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Button, Tooltip, Avatar, Menu, MenuItem, Grid, Accordion, AccordionDetails, AccordionSummary, Stack, ListItemIcon } from '@mui/material'
-import { Menu as MenuIcon, ArrowDropDown as ArrowDropDownIcon, Login, CurrencyRupee, AttachMoney, DarkMode, LightMode, AccountCircle as AccountCircleIcon, Logout as LogoutIcon} from '@mui/icons-material'
+import { Menu as MenuIcon, ArrowDropDown as ArrowDropDownIcon, Login, CurrencyRupee, AttachMoney, DarkMode, LightMode, AccountCircle as AccountCircleIcon, Logout as LogoutIcon, Euro, CurrencyPound, CurrencyYen} from '@mui/icons-material'
 
 import { fetchExchangeRate } from '@/store/ui/currency'
 import ItemMenu from './itemMenu'
@@ -17,6 +16,15 @@ import UserProfileSidebar from '../userSettings/UserProfileSidebar'
 const settings = [
   { menuName: 'Profile', icon: { IconName: AccountCircleIcon, color: 'primary' }},
   { menuName: 'Logout', icon: { IconName: LogoutIcon, color: 'warning' }}
+]
+
+const currencyList = [
+  { menuName: 'United States Dollar (USD)', value: 'usd', symbol: '$', icon: { IconName: AttachMoney, color: 'success' }},
+  { menuName: 'Indian Rupees (INR)', value: 'inr', symbol: '₹', icon: { IconName: CurrencyRupee, color: 'warning' }},
+  { menuName: 'Euro (EUR)', value: 'eur', symbol: '€', icon: { IconName: Euro, color: 'primary' }},
+  { menuName: 'British Pound Sterling (GBP)', value: 'gbp', symbol: '£', icon: { IconName: CurrencyPound, color: 'info' }},
+  { menuName: 'Canadian Dollar (CAD)', value: 'cad', symbol: '$', icon: { IconName: AttachMoney, color: 'error' }},
+  { menuName: 'Japanese Yen (JPY)', value: 'jpy', symbol: '¥', icon: { IconName: CurrencyYen, color: 'secondary' }}
 ]
 
 export default function NavBar ({window, toggleTheme}) {
@@ -30,8 +38,9 @@ export default function NavBar ({window, toggleTheme}) {
   const userData = useSelector(state => state?.storage?.authUser)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [anchorElUser, setAnchorElUser] = useState(null)
+  const [anchorElCurrency, setAnchorElCurrency] = useState(null)
   const [isDark, setIsDark] = useState(false)
-  const [selectedCurrency, setSelectedCurrency] = useState('Rs')
+  const [ActiveCurrency, setActiveCurrency] = useState(CurrencyRupee)
   const [openProfileSidebar, setOpenProfileSidebar] = useState(false)
 
   // Methods
@@ -46,22 +55,29 @@ export default function NavBar ({window, toggleTheme}) {
       dispatch({type: 'authModal/open'})
     }
   }
+  const handleOpenCurrencyMenu = (event) => {
+    setAnchorElCurrency(event.currentTarget)
+  }
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
+  }
+  const handleCloseCurrencyMenu = () => {
+    setAnchorElCurrency(null)
   }
   const changeTheme = () => {
     setIsDark(!isDark)
     toggleTheme()
   }
-  const changeCurrency = () => {
-    setSelectedCurrency(selectedCurrency === 'Rs' ? 'Dlr' : 'Rs')
-    dispatch(fetchExchangeRate(selectedCurrency === 'Rs' ? 'USD' : 'INR'))
+  const changeCurrency = (currency, icon, symbol) => {
+    handleCloseCurrencyMenu()
+    setActiveCurrency(icon)
+    dispatch(fetchExchangeRate(currency, symbol))
   }
   const clickFunction = (loggingOut = false, menu) => {
     handleCloseUserMenu()
     if (loggingOut) {
       logOutUser()
-    }  else if (menu === 'Profile') {
+    } else if (menu === 'Profile') {
       setOpenProfileSidebar(true)
     }
   }
@@ -70,10 +86,6 @@ export default function NavBar ({window, toggleTheme}) {
     dispatch({type: 'localstorage/get'})
     Cookies.remove('accessToken')
     router.push('/')
-  }
-  const checkSignedIn = async () => {
-    toast('Please Sign-in to Continue !')
-    dispatch({type: 'authModal/open'})
   }
 
   // Side Effects
@@ -143,16 +155,10 @@ export default function NavBar ({window, toggleTheme}) {
               </IconButton>
             </Grid>
             <Grid item sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', justifyContent: 'space-between' }}>
-              {userData && pathname !== '/' && <Tooltip title={`Switch to ${selectedCurrency === 'Rs' ? 'Dollar($)' : 'Rupees(₹)'}`}>
-                <IconButton onClick={changeCurrency}>
-                  <Avatar alt="Currency">
-                    {selectedCurrency === 'Rs'
-                      ? (
-                        <CurrencyRupee />
-                      ) : (
-                        <AttachMoney />
-                      )
-                    }
+              {userData && pathname !== '/' && <Tooltip title='Switch Currency'>
+                <IconButton onClick={handleOpenCurrencyMenu}>
+                  <Avatar alt="Currency" sx={{bgcolor: 'primary.main', color: 'primary.contrastText'}}>
+                    <ActiveCurrency />
                   </Avatar>
                 </IconButton>
               </Tooltip>}
@@ -209,6 +215,31 @@ export default function NavBar ({window, toggleTheme}) {
                   </MenuItem>
                 ))}
               </Menu>
+              <Menu
+                sx={{ mt: '40px' }}
+                id="menu-appbar"
+                anchorEl={anchorElCurrency}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                open={Boolean(anchorElCurrency)}
+                onClose={handleCloseCurrencyMenu}
+              >
+                {currencyList.map(({menuName, value, icon: {IconName, color}}, index) => (
+                  <MenuItem key={index} onClick={() => { changeCurrency(value, IconName) }}>
+                    <ListItemIcon>
+                      <IconName color={color} />
+                    </ListItemIcon>
+                    <ListItemText>{menuName}</ListItemText>
+                  </MenuItem>
+                ))}
+              </Menu>
             </Grid>
           </Toolbar>
         </AppBar>
@@ -231,7 +262,6 @@ export default function NavBar ({window, toggleTheme}) {
           <Box sx={{ textAlign: 'center', p: '10px' }}>
             <Image onClick={handleDrawerToggle} priority alt="Expensio logo" src={isDark ? '/dark-logo.svg' : '/logo.svg'} width='200' height='70'/>
             <hr className='MuiDivider-root' style={{marginTop: '5px', marginBottom: '30px'}} />
-            <ItemMenu handleDrawerToggle={handleDrawerToggle} loggedIn={!!userData} checkSignedIn={checkSignedIn} />
             {
               userData
                 ? (
