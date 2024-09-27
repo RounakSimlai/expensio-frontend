@@ -1,8 +1,21 @@
 import { useState } from 'react'
 import { MuiTelInput } from 'mui-tel-input'
-import { Button, TextField, Grid, Box, Typography, Divider, IconButton, Stack, SvgIcon, Accordion, AccordionSummary, AccordionDetails, Paper, ListItem, List, InputAdornment } from '@mui/material'
-import {ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon} from '@mui/icons-material'
+import { Button, TextField, Grid, Box, Typography, Divider, IconButton, Stack, SvgIcon, Accordion, AccordionSummary, AccordionDetails, ListItem, List, InputAdornment, Avatar } from '@mui/material'
+import { ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material'
 import PassCheck from '../ui/passwordStrengthChecker'
+import styled from '@emotion/styled'
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1
+})
 
 export default function RegistrationDetails ({inputData, errors, handleInput, validateInput, userRegister}) {
 
@@ -24,6 +37,12 @@ export default function RegistrationDetails ({inputData, errors, handleInput, va
   return (
     <Box component="form" sx={{ mt: 3 }}>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <label htmlFor='hidden-input' style={{cursor: 'pointer'}}>
+            <Avatar alt='image' src={inputData.image} sx={{width: 150, height: 150, ml: 23 }} />
+          </label>
+          <VisuallyHiddenInput id='hidden-input' type="file" onChange={(event) => { handleInput(event.target.files[0], 'image') }} accept=".png, .jpg, .jpeg"/>
+        </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             id="first_name"

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 
 // thunk reducers imports
-import UserReducer from './user'
+import AuthReducer from './auth'
 
 // ui reducer imports
 import AuthModalReducer from './ui/auth'
@@ -10,7 +10,7 @@ import CurrencyUIReducer from './ui/currency'
 
 const rootReducer = combineReducers({
   // thunk reducers
-  UserReducer,
+  AuthReducer,
   // ui reducers
   authModal: AuthModalReducer,
   storage: StorageReducer,

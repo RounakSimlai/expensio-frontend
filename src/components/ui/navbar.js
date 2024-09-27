@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { AppBar, Box, CssBaseline, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Button, Tooltip, Avatar, Menu, MenuItem, Grid, Accordion, AccordionDetails, AccordionSummary, Stack, ListItemIcon } from '@mui/material'
 import { Menu as MenuIcon, ArrowDropDown as ArrowDropDownIcon, Login, CurrencyRupee, AttachMoney, DarkMode, LightMode, AccountCircle as AccountCircleIcon, Logout as LogoutIcon} from '@mui/icons-material'
 
@@ -22,7 +23,7 @@ export default function NavBar ({window, toggleTheme}) {
   // Hooks
   const router = useRouter()
   const dispatch = useDispatch()
-
+  const pathname = usePathname()
   // States
   const modalOpen = useSelector(state => state?.authModal?.isOpen)
   const userData = useSelector(state => state?.storage?.authUser)
@@ -66,7 +67,7 @@ export default function NavBar ({window, toggleTheme}) {
   const logOutUser = () => {
     localStorage.clear()
     dispatch({type: 'localstorage/get'})
-    router.reload()
+    router.push('/')
   }
   const checkSignedIn = async () => {
     toast('Please Sign-in to Continue !')
@@ -140,7 +141,7 @@ export default function NavBar ({window, toggleTheme}) {
               </IconButton>
             </Grid>
             <Grid item sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', justifyContent: 'space-between' }}>
-              {userData && <Tooltip title={`Switch to ${selectedCurrency === 'Rs' ? 'Dollar($)' : 'Rupees(₹)'}`}>
+              {userData && pathname !== '/' && <Tooltip title={`Switch to ${selectedCurrency === 'Rs' ? 'Dollar($)' : 'Rupees(₹)'}`}>
                 <IconButton onClick={changeCurrency}>
                   <Avatar alt="Currency">
                     {selectedCurrency === 'Rs'
@@ -167,18 +168,22 @@ export default function NavBar ({window, toggleTheme}) {
                 </IconButton>
               </Tooltip>
               {
-                userData ?
+                userData && pathname !== '/' ?
                   <IconButton onClick={handleOpenUserMenu} sx={{ borderRadius: 0, color: 'white', columnGap: '10px', '& .MuiTouchRipple-root .MuiTouchRipple-child': { borderRadius: '0' }}}>
                     <Avatar alt="Profile Menu" src={userData.image} />
-                    <Typography variant='caption'>{`${userData.first_name} ${userData.last_name}`}</Typography>
+                    <Typography variant='caption' color='textPrimary'>{`${userData.first_name} ${userData.last_name}`}</Typography>
                   </IconButton>
-                  :
-                  <Button variant='contained' onClick={handleOpenUserMenu} sx={{ columnGap: '10px'}}>
-                    <Typography variant='caption'>Login / Register</Typography>
-                  </Button>
+                  : userData && pathname === '/' ?
+                    <Button variant='contained' onClick={() => { router.push('/dashboard') }} sx={{ columnGap: '10px'}}>
+                      <Typography variant='caption'>Go to Dashboard</Typography>
+                    </Button>
+                    :
+                    <Button variant='contained' onClick={handleOpenUserMenu} sx={{ columnGap: '10px'}}>
+                      <Typography variant='caption'>Login / Register</Typography>
+                    </Button>
               }
               <Menu
-                sx={{ mt: '40px', ml: '55px' }}
+                sx={{ mt: '40px' }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{

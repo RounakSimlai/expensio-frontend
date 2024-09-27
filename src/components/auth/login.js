@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
 import { IconButton, InputAdornment, Button, TextField, Link, Grid, Box, Typography, Stack, Divider, SvgIcon } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 
-import { loginUser } from '@/store/user'
-import { useRouter } from 'next/router'
+import { loginUser } from '@/store/auth'
 
 export default function LoginTab () {
 
@@ -39,20 +39,12 @@ export default function LoginTab () {
     try {
       const response = await dispatch(loginUser({email: inputData.email, password: inputData.password})).unwrap()
       if (response.status.success) {
-        const userObj = {
-          ...response?.data?.user,
-          country: { label: response?.data?.user?.country.name, value: response?.data?.user?.country_id},
-          state: { label: response?.data?.user?.state.name, value: response?.data?.user?.state_id},
-          city: { label: response?.data?.user?.city.name, value: response?.data?.user?.city_id}
-        }
+        const userObj = response?.data?.user
         localStorage.setItem('accessToken', JSON.stringify(response?.data?.access_token))
         localStorage.setItem('authUser', JSON.stringify(userObj))
         dispatch({type: 'localstorage/get'})
-        if (response?.data?.user?.role?.name === 'Customer') {
-          router.reload()
-        } else {
-          router.replace('/admin')
-        }
+        dispatch({type: 'authModal/close'})
+        router.replace('/dashboard')
       } else {
         toast.error(response.status.message)
       }

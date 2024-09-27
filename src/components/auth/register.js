@@ -6,21 +6,23 @@ import zxcvbn from 'zxcvbn'
 import toast from 'react-hot-toast'
 import { Box, Typography } from '@mui/material'
 
-import { loginUser, registerUser } from '@/store/user'
+import { loginUser, registerUser } from '@/store/auth'
+import { convertToBase64 } from '@/helpers/fileHelper'
 import RegistrationDetails from './userRegDetails'
 
 export default function RegisterTab () {
   // Hooks
   const dispatch = useDispatch()
   const router = useRouter()
-  // States
 
+  // States
   const [inputData, setInputData] = useState({
     first_name: '',
     last_name: '',
     email: '',
     phone_number: '',
-    password: ''
+    password: '',
+    image: '/guest.jpg'
   })
   const [inputErrors, setInputErrors] = useState({
     first_name: '',
@@ -57,11 +59,24 @@ export default function RegisterTab () {
     }
   }
 
-  const handleInput = (input, key) => {
-    setInputData({
-      ...inputData,
-      [key]: input
-    })
+  const handleInput = async (input, key) => {
+    if (key === 'image') {
+      try {
+        if (input) {
+          setInputData({
+            ...inputData,
+            image: await convertToBase64(input)
+          })
+        }
+      } catch (ex) {
+        toast.error(ex.message)
+      }
+    } else {
+      setInputData({
+        ...inputData,
+        [key]: input
+      })
+    }
   }
 
   const validateInput = (input, key) => {
@@ -77,10 +92,10 @@ export default function RegisterTab () {
       })
     }
     if (key === 'first_name' || key === 'last_name') {
-      if (!/^[a-z A-Z]*$/.test(input)) {
+      if (!/^[a-z A-Z ]*$/.test(input)) {
         setInputErrors({
           ...inputErrors,
-          [key]: 'Only alphabetical characters are allowed'
+          [key]: 'Only alphabetical characters are allowed!'
         })
       } else {
         setInputErrors({

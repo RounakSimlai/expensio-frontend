@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input'
-import { Autocomplete, Avatar, Box, Button, Divider, Drawer, Grid, IconButton, TextField, Typography, Link, Tooltip } from '@mui/material'
+import { Avatar, Box, Divider, Drawer, Grid, IconButton, TextField, Typography, Link, Tooltip } from '@mui/material'
 import { Close as CloseIcon, Cached as CachedIcon, Done as DoneIcon, Edit as EditIcon } from '@mui/icons-material'
 import styled from '@emotion/styled'
-import { editUserMaster } from '@/store/user'
+import { updateUserProfile } from '@/store/auth'
+import { convertToBase64 } from '@/helpers/fileHelper'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -41,20 +42,6 @@ export default function UserProfileSidebar ({openProfileSidebar, toggleProfileSi
   })
 
   // Methods
-
-  const convertToBase64 = (file) => {
-    // eslint-disable-next-line no-undef
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-      fileReader.onload = () => {
-        resolve(fileReader.result)
-      }
-      fileReader.onerror = (error) => {
-        reject(error)
-      }
-    })
-  }
 
   const handleInput = async (input, key) => {
     if (key === 'image') {
@@ -149,7 +136,7 @@ export default function UserProfileSidebar ({openProfileSidebar, toggleProfileSi
         email: inputData.email,
         phone_number: inputData.phone_number
       }
-      const response = await dispatch(editUserMaster(payload)).unwrap()
+      const response = await dispatch(updateUserProfile(payload)).unwrap()
       if (response.status.success) {
         toast.success(response.status.message)
         localStorage.setItem('authUser', JSON.stringify({...userData, ...payload}))
