@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { post } from '../../helpers/apiHelper'
+import { post, put } from '../../helpers/apiHelper'
 
 // Thunks
 
@@ -12,12 +12,12 @@ export const registerUser = createAsyncThunk('/register-user', async (payload) =
 })
 
 export const updateUserProfile = createAsyncThunk('/update-user-profile', async (payload) => {
-  return await post('auth/update-profile', payload)
+  return await put('auth/update-profile', payload)
 })
 
 // Slice
 const authSlice = createSlice({
-  name: 'user',
+  name: 'auth',
   initialState:  {},
   reducers: {},
   extraReducers () {}
